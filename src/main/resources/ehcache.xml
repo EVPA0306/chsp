@@ -20,5 +20,9 @@
 
     <cache alias="com.evpa.chsp.domain.User.persistentTokens" uses-template="simple"/>
 
+    <cache alias="com.evpa.chsp.domain.Payment" uses-template="simple"/>
+
+    <cache alias="com.evpa.chsp.domain.Category" uses-template="simple"/>
+
     <!-- jhipster-needle-ehcache-add-entry -->
 </config>
