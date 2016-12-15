@@ -27,6 +27,10 @@
                 "min"
             ],
             "fieldValidateRulesMin": 0
+        },
+        {
+            "fieldName": "comment",
+            "fieldType": "String"
         }
     ],
     "changelogDate": "20161213215055",

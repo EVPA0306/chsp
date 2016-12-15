@@ -34,6 +34,9 @@ public class Payment implements Serializable {
     @Column(name = "amount", nullable = false)
     private Float amount;
 
+    @Column(name = "comment")
+    private String comment;
+
     @ManyToOne
     @NotNull
     private Category category;
@@ -70,6 +73,19 @@ public class Payment implements Serializable {
 
     public void setAmount(Float amount) {
         this.amount = amount;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public Payment comment(String comment) {
+        this.comment = comment;
+        return this;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public Category getCategory() {
@@ -111,6 +127,7 @@ public class Payment implements Serializable {
             "id=" + id +
             ", date='" + date + "'" +
             ", amount='" + amount + "'" +
+            ", comment='" + comment + "'" +
             '}';
     }
 }

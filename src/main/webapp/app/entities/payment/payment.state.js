@@ -97,6 +97,7 @@
                             return {
                                 date: null,
                                 amount: null,
+                                comment: null,
                                 id: null
                             };
                         }

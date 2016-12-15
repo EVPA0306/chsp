@@ -47,6 +47,9 @@ public class PaymentResourceIntTest {
     private static final Float DEFAULT_AMOUNT = 0F;
     private static final Float UPDATED_AMOUNT = 1F;
 
+    private static final String DEFAULT_COMMENT = "AAAAAAAAAA";
+    private static final String UPDATED_COMMENT = "BBBBBBBBBB";
+
     @Inject
     private PaymentRepository paymentRepository;
 
@@ -86,7 +89,8 @@ public class PaymentResourceIntTest {
     public static Payment createEntity(EntityManager em) {
         Payment payment = new Payment()
                 .date(DEFAULT_DATE)
-                .amount(DEFAULT_AMOUNT);
+                .amount(DEFAULT_AMOUNT)
+                .comment(DEFAULT_COMMENT);
         // Add required entity
         Category category = CategoryResourceIntTest.createEntity(em);
         em.persist(category);
@@ -119,6 +123,7 @@ public class PaymentResourceIntTest {
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getDate()).isEqualTo(DEFAULT_DATE);
         assertThat(testPayment.getAmount()).isEqualTo(DEFAULT_AMOUNT);
+        assertThat(testPayment.getComment()).isEqualTo(DEFAULT_COMMENT);
 
         // Validate the Payment in ElasticSearch
         Payment paymentEs = paymentSearchRepository.findOne(testPayment.getId());
@@ -193,7 +198,8 @@ public class PaymentResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
-            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())));
+            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())))
+            .andExpect(jsonPath("$.[*].comment").value(hasItem(DEFAULT_COMMENT.toString())));
     }
 
     @Test
@@ -208,7 +214,8 @@ public class PaymentResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(payment.getId().intValue()))
             .andExpect(jsonPath("$.date").value(DEFAULT_DATE.toString()))
-            .andExpect(jsonPath("$.amount").value(DEFAULT_AMOUNT.doubleValue()));
+            .andExpect(jsonPath("$.amount").value(DEFAULT_AMOUNT.doubleValue()))
+            .andExpect(jsonPath("$.comment").value(DEFAULT_COMMENT.toString()));
     }
 
     @Test
@@ -231,7 +238,8 @@ public class PaymentResourceIntTest {
         Payment updatedPayment = paymentRepository.findOne(payment.getId());
         updatedPayment
                 .date(UPDATED_DATE)
-                .amount(UPDATED_AMOUNT);
+                .amount(UPDATED_AMOUNT)
+                .comment(UPDATED_COMMENT);
 
         restPaymentMockMvc.perform(put("/api/payments")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -244,6 +252,7 @@ public class PaymentResourceIntTest {
         Payment testPayment = paymentList.get(paymentList.size() - 1);
         assertThat(testPayment.getDate()).isEqualTo(UPDATED_DATE);
         assertThat(testPayment.getAmount()).isEqualTo(UPDATED_AMOUNT);
+        assertThat(testPayment.getComment()).isEqualTo(UPDATED_COMMENT);
 
         // Validate the Payment in ElasticSearch
         Payment paymentEs = paymentSearchRepository.findOne(testPayment.getId());
@@ -303,6 +312,7 @@ public class PaymentResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
-            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())));
+            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())))
+            .andExpect(jsonPath("$.[*].comment").value(hasItem(DEFAULT_COMMENT.toString())));
     }
 }

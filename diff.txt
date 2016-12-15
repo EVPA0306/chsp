@@ -1,0 +1,282 @@
+diff --git a/.jhipster/Payment.json b/.jhipster/Payment.json
+index eea9fe2..cbf81bc 100644
+--- a/.jhipster/Payment.json
++++ b/.jhipster/Payment.json
+@@ -27,6 +27,10 @@
+                 "min"
+             ],
+             "fieldValidateRulesMin": 0
++        },
++        {
++            "fieldName": "comment",
++            "fieldType": "String"
+         }
+     ],
+     "changelogDate": "20161213215055",
+diff --git a/src/main/java/com/evpa/chsp/domain/Payment.java b/src/main/java/com/evpa/chsp/domain/Payment.java
+index 35d63f4..0fa4a7f 100644
+--- a/src/main/java/com/evpa/chsp/domain/Payment.java
++++ b/src/main/java/com/evpa/chsp/domain/Payment.java
+@@ -34,6 +34,9 @@ public class Payment implements Serializable {
+     @Column(name = "amount", nullable = false)
+     private Float amount;
+ 
++    @Column(name = "comment")
++    private String comment;
++
+     @ManyToOne
+     @NotNull
+     private Category category;
+@@ -72,6 +75,19 @@ public class Payment implements Serializable {
+         this.amount = amount;
+     }
+ 
++    public String getComment() {
++        return comment;
++    }
++
++    public Payment comment(String comment) {
++        this.comment = comment;
++        return this;
++    }
++
++    public void setComment(String comment) {
++        this.comment = comment;
++    }
++
+     public Category getCategory() {
+         return category;
+     }
+@@ -111,6 +127,7 @@ public class Payment implements Serializable {
+             "id=" + id +
+             ", date='" + date + "'" +
+             ", amount='" + amount + "'" +
++            ", comment='" + comment + "'" +
+             '}';
+     }
+ }
+diff --git a/src/main/resources/config/liquibase/changelog/20161213215055_added_entity_Payment.xml b/src/main/resources/config/liquibase/changelog/20161213215055_added_entity_Payment.xml
+index b358c72..c8452bf 100644
+--- a/src/main/resources/config/liquibase/changelog/20161213215055_added_entity_Payment.xml
++++ b/src/main/resources/config/liquibase/changelog/20161213215055_added_entity_Payment.xml
+@@ -32,6 +32,10 @@
+                 <constraints nullable="false" />
+             </column>
+             
++            <column name="comment" type="varchar(255)">
++                <constraints nullable="true" />
++            </column>
++            
+             <column name="category_id" type="bigint">
+                 <constraints nullable="false" />
+             </column>
+diff --git a/src/main/webapp/app/blocks/config/bootstrap-material.config.js b/src/main/webapp/app/blocks/config/bootstrap-material.config.js
+index 512fde8..c231fce 100644
+--- a/src/main/webapp/app/blocks/config/bootstrap-material.config.js
++++ b/src/main/webapp/app/blocks/config/bootstrap-material.config.js
+@@ -5,7 +5,7 @@
+         .module('chspApp')
+         .config(bootstrapMaterialDesignConfig);
+ 
+-    compileServiceConfig.$inject = [];
++    bootstrapMaterialDesignConfig.$inject = [];
+ 
+     function bootstrapMaterialDesignConfig() {
+         $.material.init();
+diff --git a/src/main/webapp/app/entities/payment/payment-detail.html b/src/main/webapp/app/entities/payment/payment-detail.html
+index 10ed0bd..1709a8c 100644
+--- a/src/main/webapp/app/entities/payment/payment-detail.html
++++ b/src/main/webapp/app/entities/payment/payment-detail.html
+@@ -12,6 +12,10 @@
+         <dd>
+             <span>{{vm.payment.amount}}</span>
+         </dd>
++        <dt><span>Comment</span></dt>
++        <dd>
++            <span>{{vm.payment.comment}}</span>
++        </dd>
+         <dt><span>Category</span></dt>
+         <dd>
+             <a ui-sref="category-detail({id:vm.payment.category.id})">{{vm.payment.category.id}}</a>
+diff --git a/src/main/webapp/app/entities/payment/payment-dialog.html b/src/main/webapp/app/entities/payment/payment-dialog.html
+index 6957726..690cb34 100644
+--- a/src/main/webapp/app/entities/payment/payment-dialog.html
++++ b/src/main/webapp/app/entities/payment/payment-dialog.html
+@@ -49,10 +49,16 @@
+                 </p>
+             </div>
+         </div>
++        <div class="form-group">
++            <label class="control-label" for="field_comment">Comment</label>
++            <input type="text" class="form-control" name="comment" id="field_comment"
++                    ng-model="vm.payment.comment"
++                     />
++        </div>
+ 
+         <div class="form-group">
+             <label for="field_category">Category</label>
+-            <select class="form-control" id="field_category" name="category" ng-model="vm.payment.category" ng-options="category as category.name for category in vm.categories track by category.id" required>
++            <select class="form-control" id="field_category" name="category" ng-model="vm.payment.category" ng-options="category as category.id for category in vm.categories track by category.id" required>
+                 <option value=""></option>
+             </select>
+         </div>
+diff --git a/src/main/webapp/app/entities/payment/payment.state.js b/src/main/webapp/app/entities/payment/payment.state.js
+index 5b1742d..23d4cbd 100644
+--- a/src/main/webapp/app/entities/payment/payment.state.js
++++ b/src/main/webapp/app/entities/payment/payment.state.js
+@@ -97,6 +97,7 @@
+                             return {
+                                 date: null,
+                                 amount: null,
++                                comment: null,
+                                 id: null
+                             };
+                         }
+diff --git a/src/main/webapp/app/entities/payment/payments.html b/src/main/webapp/app/entities/payment/payments.html
+index 6813b06..78ea25e 100644
+--- a/src/main/webapp/app/entities/payment/payments.html
++++ b/src/main/webapp/app/entities/payment/payments.html
+@@ -38,6 +38,7 @@
+                     <th jh-sort-by="id"><span>ID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                     <th jh-sort-by="date"><span>Date</span> <span class="glyphicon glyphicon-sort"></span></th>
+                     <th jh-sort-by="amount"><span>Amount</span> <span class="glyphicon glyphicon-sort"></span></th>
++                    <th jh-sort-by="comment"><span>Comment</span> <span class="glyphicon glyphicon-sort"></span></th>
+                     <th jh-sort-by="category.id"><span>Category</span> <span class="glyphicon glyphicon-sort"></span></th>
+                     <th></th>
+                 </tr>
+@@ -47,8 +48,9 @@
+                     <td><a ui-sref="payment-detail({id:payment.id})">{{payment.id}}</a></td>
+                         <td>{{payment.date | date:'mediumDate'}}</td>
+                     <td>{{payment.amount}}</td>
++                    <td>{{payment.comment}}</td>
+                     <td>
+-                        <a ui-sref="category-detail({id:payment.category.name})">{{payment.category.name}}</a>
++                        <a ui-sref="category-detail({id:payment.category.id})">{{payment.category.id}}</a>
+                     </td>
+                     <td class="text-right">
+                         <div class="btn-group flex-btn-group-container">
+diff --git a/src/main/webapp/index.html b/src/main/webapp/index.html
+index 18c68f5..2490731 100644
+--- a/src/main/webapp/index.html
++++ b/src/main/webapp/index.html
+@@ -8,7 +8,7 @@
+     <meta name="viewport" content="width=device-width">
+     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+     <!-- build:css content/css/vendor.css -->
+-    <link rel="stylesheet" href="content/css/vendor.css">
++    <!-- <link rel="stylesheet" href="content/css/vendor.css"> -->
+     <!-- bower:css -->
+     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+     <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css">
+@@ -54,6 +54,7 @@
+     <script src="bower_components/sockjs-client/dist/sockjs.js"></script>
+     <script src="bower_components/stomp-websocket/lib/stomp.min.js"></script>
+     <script src="bower_components/arrive/src/arrive.js"></script>
++    <script src="bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
+     <script src="bower_components/angular/angular.js"></script>
+     <script src="bower_components/angular-aria/angular-aria.js"></script>
+     <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+diff --git a/src/test/gatling/simulations/PaymentGatlingTest.scala b/src/test/gatling/simulations/PaymentGatlingTest.scala
+index beee5dd..03964ea 100644
+--- a/src/test/gatling/simulations/PaymentGatlingTest.scala
++++ b/src/test/gatling/simulations/PaymentGatlingTest.scala
+@@ -68,7 +68,7 @@ class PaymentGatlingTest extends Simulation {
+             .exec(http("Create new payment")
+             .post("/api/payments")
+             .headers(headers_http_authenticated)
+-            .body(StringBody("""{"id":null, "date":"2020-01-01T00:00:00.000Z", "amount":null}""")).asJSON
++            .body(StringBody("""{"id":null, "date":"2020-01-01T00:00:00.000Z", "amount":null, "comment":"SAMPLE_TEXT"}""")).asJSON
+             .check(status.is(201))
+             .check(headerRegex("Location", "(.*)").saveAs("new_payment_url"))).exitHereIfFailed
+             .pause(10)
+diff --git a/src/test/java/com/evpa/chsp/web/rest/PaymentResourceIntTest.java b/src/test/java/com/evpa/chsp/web/rest/PaymentResourceIntTest.java
+index d2e0c24..fae4e99 100644
+--- a/src/test/java/com/evpa/chsp/web/rest/PaymentResourceIntTest.java
++++ b/src/test/java/com/evpa/chsp/web/rest/PaymentResourceIntTest.java
+@@ -47,6 +47,9 @@ public class PaymentResourceIntTest {
+     private static final Float DEFAULT_AMOUNT = 0F;
+     private static final Float UPDATED_AMOUNT = 1F;
+ 
++    private static final String DEFAULT_COMMENT = "AAAAAAAAAA";
++    private static final String UPDATED_COMMENT = "BBBBBBBBBB";
++
+     @Inject
+     private PaymentRepository paymentRepository;
+ 
+@@ -86,7 +89,8 @@ public class PaymentResourceIntTest {
+     public static Payment createEntity(EntityManager em) {
+         Payment payment = new Payment()
+                 .date(DEFAULT_DATE)
+-                .amount(DEFAULT_AMOUNT);
++                .amount(DEFAULT_AMOUNT)
++                .comment(DEFAULT_COMMENT);
+         // Add required entity
+         Category category = CategoryResourceIntTest.createEntity(em);
+         em.persist(category);
+@@ -119,6 +123,7 @@ public class PaymentResourceIntTest {
+         Payment testPayment = paymentList.get(paymentList.size() - 1);
+         assertThat(testPayment.getDate()).isEqualTo(DEFAULT_DATE);
+         assertThat(testPayment.getAmount()).isEqualTo(DEFAULT_AMOUNT);
++        assertThat(testPayment.getComment()).isEqualTo(DEFAULT_COMMENT);
+ 
+         // Validate the Payment in ElasticSearch
+         Payment paymentEs = paymentSearchRepository.findOne(testPayment.getId());
+@@ -193,7 +198,8 @@ public class PaymentResourceIntTest {
+             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+             .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
+             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
+-            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())));
++            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())))
++            .andExpect(jsonPath("$.[*].comment").value(hasItem(DEFAULT_COMMENT.toString())));
+     }
+ 
+     @Test
+@@ -208,7 +214,8 @@ public class PaymentResourceIntTest {
+             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+             .andExpect(jsonPath("$.id").value(payment.getId().intValue()))
+             .andExpect(jsonPath("$.date").value(DEFAULT_DATE.toString()))
+-            .andExpect(jsonPath("$.amount").value(DEFAULT_AMOUNT.doubleValue()));
++            .andExpect(jsonPath("$.amount").value(DEFAULT_AMOUNT.doubleValue()))
++            .andExpect(jsonPath("$.comment").value(DEFAULT_COMMENT.toString()));
+     }
+ 
+     @Test
+@@ -231,7 +238,8 @@ public class PaymentResourceIntTest {
+         Payment updatedPayment = paymentRepository.findOne(payment.getId());
+         updatedPayment
+                 .date(UPDATED_DATE)
+-                .amount(UPDATED_AMOUNT);
++                .amount(UPDATED_AMOUNT)
++                .comment(UPDATED_COMMENT);
+ 
+         restPaymentMockMvc.perform(put("/api/payments")
+             .contentType(TestUtil.APPLICATION_JSON_UTF8)
+@@ -244,6 +252,7 @@ public class PaymentResourceIntTest {
+         Payment testPayment = paymentList.get(paymentList.size() - 1);
+         assertThat(testPayment.getDate()).isEqualTo(UPDATED_DATE);
+         assertThat(testPayment.getAmount()).isEqualTo(UPDATED_AMOUNT);
++        assertThat(testPayment.getComment()).isEqualTo(UPDATED_COMMENT);
+ 
+         // Validate the Payment in ElasticSearch
+         Payment paymentEs = paymentSearchRepository.findOne(testPayment.getId());
+@@ -303,6 +312,7 @@ public class PaymentResourceIntTest {
+             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+             .andExpect(jsonPath("$.[*].id").value(hasItem(payment.getId().intValue())))
+             .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
+-            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())));
++            .andExpect(jsonPath("$.[*].amount").value(hasItem(DEFAULT_AMOUNT.doubleValue())))
++            .andExpect(jsonPath("$.[*].comment").value(hasItem(DEFAULT_COMMENT.toString())));
+     }
+ }
+diff --git a/src/test/javascript/karma.conf.js b/src/test/javascript/karma.conf.js
+index 5e842c2..d09c88e 100644
+--- a/src/test/javascript/karma.conf.js
++++ b/src/test/javascript/karma.conf.js
+@@ -29,6 +29,7 @@ module.exports = function (config) {
+             'src/main/webapp/bower_components/sockjs-client/dist/sockjs.js',
+             'src/main/webapp/bower_components/stomp-websocket/lib/stomp.min.js',
+             'src/main/webapp/bower_components/arrive/src/arrive.js',
++            'src/main/webapp/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js',
+             'src/main/webapp/bower_components/angular/angular.js',
+             'src/main/webapp/bower_components/angular-aria/angular-aria.js',
+             'src/main/webapp/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
