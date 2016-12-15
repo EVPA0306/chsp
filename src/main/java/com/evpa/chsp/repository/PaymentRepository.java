@@ -11,5 +11,4 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public interface PaymentRepository extends JpaRepository<Payment,Long> {
-
 }
