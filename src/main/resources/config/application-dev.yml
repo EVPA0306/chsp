@@ -23,17 +23,27 @@ spring:
     jackson:
         serialization.indent_output: true
     datasource:
+        #type: com.zaxxer.hikari.HikariDataSource
+        #url: jdbc:h2:file:./target/h2db/db/chsp;DB_CLOSE_DELAY=-1
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:h2:file:./target/h2db/db/chsp;DB_CLOSE_DELAY=-1
-        name:
+        name: jdbc:mariadb://localhost:3306/chsp
         username: chsp
-        password:
-    h2:
-        console:
-            enabled: false
+        password: chsp
+    #h2:
+    #    console:
+    #        enabled: false
+
+    hikari:
+                data-source-properties:
+                    cachePrepStmts: true
+                    prepStmtCacheSize: 250
+                    prepStmtCacheSqlLimit: 2048
+                    useServerPrepStmts: true
     jpa:
-        database-platform: com.evpa.chsp.domain.util.FixedH2Dialect
-        database: H2
+        #database-platform: com.evpa.chsp.domain.util.FixedH2Dialect
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        #database: H2
+        datebase: MYSQL
         show-sql: true
         properties:
             hibernate.cache.use_second_level_cache: true

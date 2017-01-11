@@ -17,14 +17,17 @@ spring:
     jackson:
         serialization.write_dates_as_timestamps: false
     datasource:
+        #type: com.zaxxer.hikari.HikariDataSource
+        #url: jdbc:h2:mem:chsp;DB_CLOSE_DELAY=-1
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:h2:mem:chsp;DB_CLOSE_DELAY=-1
-        name:
-        username:
-        password:
+        name: jdbc:mariadb://localhost:3306/chsp
+        username: chsp
+        password: chsp
     jpa:
-        database-platform: com.evpa.chsp.domain.util.FixedH2Dialect
-        database: H2
+        #database-platform: com.evpa.chsp.domain.util.FixedH2Dialect
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        #database: H2
+        database: MYSQL
         open-in-view: false
         show-sql: true
         hibernate:
