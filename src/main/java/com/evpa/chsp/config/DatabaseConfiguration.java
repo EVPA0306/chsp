@@ -4,7 +4,7 @@ import com.evpa.chsp.config.liquibase.AsyncSpringLiquibase;
 
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import liquibase.integration.spring.SpringLiquibase;
-import org.h2.tools.Server;
+//import org.h2.tools.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
@@ -39,11 +39,11 @@ public class DatabaseConfiguration {
      * @return the H2 database TCP server
      * @throws SQLException if the server failed to start
      */
-    @Bean(initMethod = "start", destroyMethod = "stop")
+    /*@Bean(initMethod = "start", destroyMethod = "stop")
     @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
     public Server h2TCPServer() throws SQLException {
         return Server.createTcpServer("-tcp","-tcpAllowOthers");
-    }
+    }*/
 
     @Bean
     public SpringLiquibase liquibase(DataSource dataSource, LiquibaseProperties liquibaseProperties) {

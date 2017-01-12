@@ -114,7 +114,8 @@ if (project.hasProperty('shell')) {
 }
 
 group = 'com.evpa.chsp'
-version = '0.0.1-SNAPSHOT'
+/*version = '0.0.1-SNAPSHOT'*/
+version = ''
 
 description = ''
 
@@ -212,8 +213,6 @@ dependencies {
     }
     compile "io.springfox:springfox-bean-validators:${springfox_version}"
     compile "org.mariadb.jdbc:mariadb-java-client:${mariadb_java_client_version}"
-    compile "org.postgresql:postgresql"
-    compile "com.h2database:h2"
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
     testCompile "com.jayway.awaitility:awaitility:${awaility_version}"
     testCompile "com.jayway.jsonpath:json-path"
