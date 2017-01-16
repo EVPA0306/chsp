@@ -115,7 +115,7 @@ if (project.hasProperty('shell')) {
 
 group = 'com.evpa.chsp'
 /*version = '0.0.1-SNAPSHOT'*/
-version = ''
+version = '0.0.1'
 
 description = ''
 
